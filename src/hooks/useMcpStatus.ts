@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type MutableRefObjec
 import { invoke } from '@tauri-apps/api/core'
 import { isTauri, mockInvoke } from '../mock-tauri'
 import { createTranslator, type AppLocale } from '../lib/i18n'
+import { errorMessage } from '../utils/vaultErrors'
 
 export type McpStatus = 'checking' | 'installed' | 'not_installed'
 type ManualConfigSnippet = string
@@ -68,10 +69,6 @@ function disconnectSuccessToast(result: McpCommandResult, t: Translator): ToastM
   return result === 'removed'
     ? t('mcp.toast.disconnected')
     : t('mcp.toast.alreadyDisconnected')
-}
-
-function errorMessage(error: unknown): ToastMessage {
-  return error instanceof Error ? error.message : String(error)
 }
 
 function visibleManualConfig(
@@ -185,7 +182,9 @@ export function useMcpStatus(
 
   useEffect(() => {
     let cancelled = false
-    setStatus('checking') // eslint-disable-line react-hooks/set-state-in-effect -- reset to checking on vault switch
+    void Promise.resolve().then(() => {
+      if (!cancelled) setStatus('checking')
+    })
 
     fetchMcpStatus(vaultPath).then((nextStatus) => {
       if (!cancelled) setStatus(nextStatus)
