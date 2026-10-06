@@ -106,7 +106,7 @@ async function pickNativeFolder(title?: string): Promise<string | null> {
  * Opens a native folder picker dialog (Tauri) or falls back to prompt (browser).
  * Returns the selected folder path, or null if the user cancelled.
  */
-export async function pickFolder(title?: string): Promise<string | null> {
+export const pickFolder = async (title?: string): Promise<string | null> => {
   if (folderPickerRequestInFlight) return null
 
   folderPickerRequestInFlight = true
