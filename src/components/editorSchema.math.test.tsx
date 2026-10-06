@@ -123,6 +123,16 @@ describe('MathBlockEditor', () => {
     expect(editorThemeCss).toContain('width: 100%;')
   })
 
+  it('keeps display equation tags in normal flow beside the formula', () => {
+    const editorThemeCss = readFileSync(`${process.cwd()}/src/components/EditorTheme.css`, 'utf8')
+
+    expect(editorThemeCss).toContain(
+      '.editor__blocknote-container .math--block .katex-display > .katex > .katex-html > .tag {',
+    )
+    expect(editorThemeCss).toContain('position: static;')
+    expect(editorThemeCss).toContain('margin-inline-start: 1em;')
+  })
+
   it('does not stack divider bottom spacing with following heading top spacing', () => {
     const editorThemeCss = readFileSync(`${process.cwd()}/src/components/EditorTheme.css`, 'utf8')
 
