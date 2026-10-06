@@ -148,13 +148,13 @@ function mockEditor(): Editor {
   canvas.className = 'tl-canvas'
   container.append(canvas)
 
-  const externalContentHandlers: Record<string, (content: unknown) => Promise<void>> = {}
+  const externalContentHandlers = new Map<string, (content: unknown) => Promise<void>>()
   return {
     dispatch: vi.fn(),
     externalContentHandlers,
     getContainer: vi.fn(() => container),
     registerExternalContentHandler: vi.fn((type: string, handler: (content: unknown) => Promise<void>) => {
-      externalContentHandlers[type] = handler
+      externalContentHandlers.set(type, handler)
     }),
     textMeasure: {
       measureElementTextNodeSpans: vi.fn(() => {
@@ -167,10 +167,11 @@ function mockEditor(): Editor {
 
 function registeredTldrawPasteHandler(editor: Editor) {
   const handlers = (editor as unknown as {
-    externalContentHandlers: Record<string, (content: unknown) => Promise<void>>
+    externalContentHandlers: Map<string, (content: unknown) => Promise<void>>
   }).externalContentHandlers
-  expect(handlers.tldraw).toEqual(expect.any(Function))
-  return handlers.tldraw
+  const handler = handlers.get('tldraw')
+  expect(handler).toEqual(expect.any(Function))
+  return handler as (content: unknown) => Promise<void>
 }
 
 function maskedTldrawIcon(mask: string): HTMLElement {
