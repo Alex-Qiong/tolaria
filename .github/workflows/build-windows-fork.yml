@@ -96,6 +96,10 @@ jobs:
     permissions:
       contents: write
     steps:
+      # gh release create needs a git repo context; without checkout it fails
+      # with "fatal: not a git repository".
+      - uses: actions/checkout@v4
+
       - uses: actions/download-artifact@v4
         with:
           name: tolaria-windows-installer
