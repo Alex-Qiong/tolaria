@@ -76,7 +76,10 @@ jobs:
       - name: Build Tauri app (NSIS, no updater signing)
         shell: pwsh
         run: |
-          pnpm tauri build --target x86_64-pc-windows-msvc --bundles nsis --config '{"bundle":{"createUpdaterArtifacts":false}}'
+          # Fork build has no signing keys; disable updater artifacts via a
+          # config file (avoids pwsh quote-stripping issues with --config JSON).
+          Set-Content -Path "src-tauri/tauri.fork-windows.json" -Value '{"bundle":{"createUpdaterArtifacts":false}}'
+          pnpm tauri build --target x86_64-pc-windows-msvc --bundles nsis --config src-tauri/tauri.fork-windows.json
 
       - name: Upload installer
         uses: actions/upload-artifact@v4
